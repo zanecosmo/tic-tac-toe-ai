@@ -1,58 +1,31 @@
-import { Board, Row } from "./types";
+import Board from "./classes/Board";
+import Player from "./classes/Player";
+import { BoardState } from "./types";
 
-const board: Board = [
-        [null, null, null],
-        [null, null, null],
-        [null, null, null]
+(() => {
+    const stringState: string = "X|O|O|XOX";
+
+    const state: BoardState = [
+        ["X", null, null],
+        [null, "O", null],
+        [null, null, "X"]
     ];
 
-const stringToBoard = (string: string): void => {
-    [...string].forEach((value, index) => {
-        const row = Math.floor(index / 3);
-        const column = index % 3;
-        board[row][column] = value !== "|" ? value : null;
-    });
-};
-
-const doValuesMatch = (a: string | null, b: string | null, c: string | null): boolean => {
-    if (a === null || b === null || c === null) return false;
-    return (a === b && a === c) ? true : false;
-};
-
-const threeInARow = (board: Board): boolean => {
-    for (let i = 0; i < 3; i++) {
-        if (doValuesMatch(board[i][0], board[i][1], board[i][2])) return true;
-        if (doValuesMatch(board[0][i], board[1][i], board[2][i])) return true;
-    };
-    if (doValuesMatch(board[0][0], board[1][1], board[2][2])) return true;
-    if (doValuesMatch(board[0][2], board[1][1], board[2][0])) return true;
-    return false;
-};
-
-const gameIsOver = (board: Board) => {
-    return true;
-};
-
-const evaluateBoard = (board: Board) => {
-    return 1;
-};
-
-let currentPlayer = "";
-
-const negamax = (board: Board, depth: number, color: number): number => {
-    if (depth === 0 || gameIsOver(board)) return color * (evaluateBoard(board));
-
-    let value: number = -Infinity;
-
-    for (let row = 0; row < board.length; row++) {
-
-        for (let column = 0; column < board[row].length; column++) {
-            
-            if (board[row][column] === null) board[row][column] = currentPlayer;
-            currentPlayer = currentPlayer === "X" ? "O" : "X";
-            value = Math.max(value, -negamax(board, depth - 1, -color));
-        };
+    if (stringState.length !== 9) {
+        console.log("board state string must be of length 9");
+        return;
     };
     
-    return value;
-}
+    const board = new Board(stringState);
+    
+    board.printBoardState();
+    console.log("");
+    // console.log(board.getAvailableMoves());
+    // board.insert("O", { row: 2, column: 1 });
+    // board.printBoardState();
+
+    const player = new Player(81);
+    console.log(player.getBestMove(board, true, 0));
+    console.log(player.nodeMap);
+})();
+
