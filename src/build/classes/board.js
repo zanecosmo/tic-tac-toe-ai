@@ -81,15 +81,12 @@ class Board {
         this.isTerminal = () => {
             if (this.isEmpty())
                 return null;
-            console.log("CURRENT BOARD:");
-            this.printBoardState();
             for (let i = 0; i < 3; i++) {
                 if (this.doValuesMatch(this.state[i][0], this.state[i][1], this.state[i][2])) {
                     return this.state[i][0];
                 }
                 ;
                 if (this.doValuesMatch(this.state[0][i], this.state[1][i], this.state[2][i])) {
-                    // console.log("THIS SHOULD BE THE WINNER");
                     return this.state[0][i];
                 }
                 ;
@@ -103,9 +100,7 @@ class Board {
                 return this.state[1][1];
             }
             ;
-            if (this.isFull())
-                return "DRAW";
-            return null;
+            return this.isFull() ? "DRAW" : null;
         };
         this.insert = (symbol, move) => {
             if (symbol !== types_1.Symbols.X && symbol !== types_1.Symbols.O)

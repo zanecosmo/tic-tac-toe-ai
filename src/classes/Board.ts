@@ -99,9 +99,6 @@ export default class Board {
 
     isTerminal = (): string | null => {
         if (this.isEmpty()) return null;
-
-        console.log("CURRENT BOARD:");
-        this.printBoardState();
         
         for (let i = 0; i < 3; i++) {
 
@@ -110,7 +107,6 @@ export default class Board {
             };
 
             if (this.doValuesMatch(this.state[0][i], this.state[1][i], this.state[2][i])) {
-                // console.log("THIS SHOULD BE THE WINNER");
                 return this.state[0][i];
             };
         };
@@ -123,9 +119,7 @@ export default class Board {
             return this.state[1][1];
         };
 
-        if (this.isFull()) return "DRAW";
-
-        return null;
+        return this.isFull() ? "DRAW" : null;
     };
 
     insert = (symbol: string, move: Move): boolean => {

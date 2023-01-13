@@ -7,49 +7,38 @@ const types_1 = require("../types");
 const Board_1 = __importDefault(require("./Board"));
 class Player {
     constructor(maxDepth = -1) {
-        this.getBestMoveNegamax = (board, color, depth) => {
-            if (depth === 0)
-                this.nodeMap.clear();
+        this.determineSymbol = (board) => {
+            if (board.isEmpty())
+                return types_1.Symbols.X;
+            let x = 0;
+            let o = 0;
+            board.state.forEach(row => row.forEach(val => {
+                if (!val)
+                    return;
+                if (val === types_1.Symbols.X)
+                    x++;
+                else
+                    o++;
+            }));
+            return x > o ? types_1.Symbols.O : types_1.Symbols.X;
+        };
+        this.makeMove = (board) => {
             const winner = board.isTerminal();
-            if (winner || depth === this.maxDepth) {
-                return winner === "DRAW" ? 0 : (100 - depth) * -color; // if color = -1, returned value should be positive
-            }
-            ;
-            let best = Infinity * color; // if color = -1, best = -infinity
-            console.log("AVAIABLE MOVES:");
-            console.log(board.getAvailableMoves());
-            board.getAvailableMoves().forEach((move, index) => {
-                console.log(`DEPTH: ${depth}, INDEX: ${index}`);
-                console.log(board.getAvailableMoves());
-                console.log("CURRENT MOVE");
-                console.log(move);
-                const state = JSON.parse(JSON.stringify(board.state));
-                // console.log("CURRENT BEST:")
-                // console.log(best);
-                const childBoard = new Board_1.default(state);
-                childBoard.insert((Math.sign(color) === -1) ? types_1.Symbols.O : types_1.Symbols.X, move);
-                const nodeValue = this.getBestMoveNegamax(childBoard, -color, (depth + 1));
-                console.log("COLOR:");
-                console.log(color);
-                console.log(`MAX: ${best} vs ${nodeValue}`);
-                // best = (Math.sign(color) === -1) ? Math.min(best, nodeValue) : Math.max(best, nodeValue);
-                best = Math.max(best, nodeValue); // if color = -1, we want the bigger between -infinity and the nodeValue
-                // best = nodeValue;
-                if (depth === 0) {
-                    const moves = this.nodeMap.has(nodeValue)
-                        ? [...this.nodeMap.get(nodeValue), move]
-                        : [move];
-                    this.nodeMap.set(nodeValue, moves);
-                }
-                ;
-            });
-            console.log(`RETURNING BEST: ${best}`);
-            return best;
+            if (winner)
+                return console.log(`GAME IS OVER. THE WINNER IS: ${winner}`);
+            const symbol = this.determineSymbol(board);
+            const bestMoveValue = this.getBestMove(board, symbol === types_1.Symbols.X ? true : false, 0);
+            const bestMoves = this.nodeMap.get(bestMoveValue);
+            if (!bestMoves)
+                return console.log("NO BEST MOVES. X DIDN'T START, GAME IS WON, OR ALGORITHM ISN'T WORKING");
+            const move = bestMoves[0];
+            board.insert(symbol, move);
         };
         this.getBestMove = (board, isMaximizing, depth) => {
             if (depth === 0)
                 this.nodeMap.clear();
             const winner = board.isTerminal();
+            // console.log(winner);
             if (winner !== null || depth === this.maxDepth) {
                 if (winner === types_1.Symbols.X)
                     return 100 - depth;
